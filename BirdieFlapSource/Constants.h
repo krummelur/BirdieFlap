@@ -2,4 +2,5 @@
 #ifndef CONSTANTS
 #define CONSTANTS
 #define MAX_ENEMY_AMOUNT 5
+#define MAX_CLOUD_AMOUNT 1
 #endif

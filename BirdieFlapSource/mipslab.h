@@ -42,8 +42,13 @@ extern const uint8_t const icon[128];
 extern const uint8_t const white[512];
 extern const uint8_t const image[256];
 extern const uint8_t const fullImage[128*4];
-extern const uint8_t const maincharacter[7*6];
-extern const uint8_t const enemy1_image[16*11];
+extern const uint8_t const maincharacter[7*5+2];
+extern const uint8_t const gameover[128*32+2];
+extern const uint8_t const enemy1[6*6+2];
+extern const uint8_t const enemy2[5*6+2];
+extern const uint8_t const enemy3[10*6+2];
+extern const uint8_t const enemy4[5*5+2];
+extern const uint8_t const cloud1[29*16+2];
 
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];

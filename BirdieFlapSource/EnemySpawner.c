@@ -1,10 +1,15 @@
 #include "EnemySpawner.h"
+#include <pic32mx.h>
+#include "mipslab.h"
+
+uint8_t *enemySprites[] = {&enemy1, &enemy2, &enemy3, &enemy4};
+
 int previousTime = 0;
-void spawnEnemy(struct enemy_bird * enemies) {
-	int spawntime = 1000;
-	if(currentTimeMillis() - previousTime > 500) {
+int spawnTime = 1000;
+void spawnEnemy(struct bird * enemies) {
+	if((currentTimeMillis() - previousTime) > spawnTime) {
 	previousTime = currentTimeMillis();
-	
+	spawnTime = (TMR2 % 1500) + 400;
 	int i;
 	int foundEnemy = -1;
 	for(i = 0; i < MAX_ENEMY_AMOUNT; i++) {
@@ -16,10 +21,13 @@ void spawnEnemy(struct enemy_bird * enemies) {
 	if(foundEnemy == -1)
 		return;
 	
-	struct enemy_bird enemy;
-	enemy.position.x = 128-16;
-	enemy.position.y = 16;
-	enemy.horizontalSpeed = 0.5;
-	enemies[i] = enemy;
-	}
+	struct bird enemy = {
+		1,
+		((float)(TMR2 % 1000))/4000.0 + 0.06,
+		0.0,
+		{128-16, 8 + (TMR2 % 24)},
+		enemySprites[(TMR2 % 4)]
+	};
+		enemies[i] = enemy;	
+}
 }

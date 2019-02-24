@@ -6,186 +6,128 @@
    This file should be changed by YOU! So you must
    add comment(s) here with your name(s) and date(s):
 
-   This file modified 2017-04-31 by Ture Teknolog 
+   This file modified 2017-04-31 by Ture Teknolog
 
    For copyright and licensing, see file COPYING */
+#include <stdint.h>       /* Declarations of uint_32 and the like */
+#include <pic32mx.h>      /* Declarations of system-specific addresses etc */
+#include "mipslab.h"      /* Declatations for these labs */
+#include "enemy.h"        /* Declatations for these labs */
+#include "bird.h"         /* Declatations for these labs */
+#include "timeKeeper.h"   /* Declatations for these labs */
+#include "Constants.h"    /*	CONSTANTS */
+#include "EnemySpawner.h" /*	CONSTANTS */
 
-#include <stdint.h>   /* Declarations of uint_32 and the like */
-#include <pic32mx.h>  /* Declarations of system-specific addresses etc */
-#include "mipslab.h"  /* Declatations for these labs */
-#include "enemy.h"  /* Declatations for these labs */
-#include "timeKeeper.h"  /* Declatations for these labs */
-#include "Constants.h"	/*	CONSTANTS */
-#include "EnemySpawner.h"	/*	CONSTANTS */
-
-struct enemy_bird enemies[MAX_ENEMY_AMOUNT];
+struct bird enemies[MAX_ENEMY_AMOUNT];
+struct cloud clouds[MAX_CLOUD_AMOUNT];
+struct bird player;
 
 int mytime = 0x5957;
-int loops =0;
+int loops = 0;
 char textstring[] = "text, more text, and even more text!";
+int gameOver = 0;
 
 /* Interrupt Service Routine */
-void user_isr( void )
-{
-  IFS(0) = 0;
-	if(1) {
+void user_isr(void) {
+	IFS(0) = 0;
+	if (1)
+	{
 		milli_increment();
 	}
-  return;
+	return;
 }
 
 void init_interrupts(void) {
-	
+
 	T2CON = 0x10;
 	PR2 = 40000;
-	TMR2=0;
+	TMR2 = 0;
 	T2CON = T2CON | 0x8000;
 	IPC(2) = 0x10;
-	IEC(0)= IEC(0) | 0x100;
+	IEC(0) = IEC(0) | 0x100;
 	enable_interrupts();
 }
 
-
 /* Lab-specific initialization goes here */
-void labinit( void )
-{
+void labinit(void) {
 	init_interrupts();
-	
-	/*
-	struct enemy_bird enemy1;
-	struct vector2 enemy1Position;
-	enemy1.isActive = 1;
-	enemy1Position.x = 96.0;
-	enemy1Position.y = 16.0;
-	enemy1.position = enemy1Position;
-	enemy1.horizontalSpeed = 0.1;
-	enemies[0] = enemy1;
-	*/
-	struct enemy_bird inactiveEnemy5;
-	inactiveEnemy5.isActive = 0;
-	struct enemy_bird inactiveEnemy1;
-	inactiveEnemy1.isActive = 0;
-	struct enemy_bird inactiveEnemy2;
-	inactiveEnemy2.isActive = 0;
-	struct enemy_bird inactiveEnemy3;
-	inactiveEnemy3.isActive = 0;
-	struct enemy_bird inactiveEnemy4;
-	inactiveEnemy4.isActive = 0;
-	enemies[1] = inactiveEnemy1; 
-	enemies[2] = inactiveEnemy2; 
-	enemies[3] = inactiveEnemy3; 
-	enemies[4] = inactiveEnemy4; 
-	enemies[5] = inactiveEnemy5; 
-  return;
+
+	struct bird inactiveEnemy;
+	inactiveEnemy.isActive = 0;
+	enemies[1] = inactiveEnemy;
+	enemies[2] = inactiveEnemy;
+	enemies[3] = inactiveEnemy;
+	enemies[4] = inactiveEnemy;
+	enemies[5] = inactiveEnemy;
+
+	player = (struct bird) 
+	{
+		1, 0, 0,
+		{ 32, 16 }, maincharacter,
+	};
+
+	return;
 }
 
-
-/* This function is called repetitively from the main program */
-/*
-void labwork( void )
-{
-  loops++;
-  tick(&mytime);
-  time2string(textstring, mytime);
-  display_string( 16, textstring );
-  display_image(loops%2, white);
-  delay(10);
-  //display_update();
-}
-*/
-
-
-//BORROWED FROM https://stackoverflow.com/questions/11819837/converting-integer-to-string-in-c-without-sprintf
-int integer_to_string(char *buf, int bufsize, int n)
-{
-   char *start;
-
-   // Handle negative numbers.
-   //
-   if (n < 0)
-   {
-      if (!bufsize)
-         return -1;
-
-      *buf++ = '-';
-      bufsize--;
-   }
-
-   // Remember the start of the string...  This will come into play
-   // at the end.
-   //
-   start = buf;
-
-   do
-   {
-      // Handle the current digit.
-      //
-      int digit;
-      if (!bufsize)
-         return -1;
-      digit = n % 10;
-      if (digit < 0)
-         digit *= -1;
-      *buf++ = digit + '0';
-      bufsize--;
-      n /= 10;
-   } while (n);
-
-   // Terminate the string.
-   //
-   if (!bufsize)
-      return -1;
-   *buf = 0;
-
-   // We wrote the string backwards, i.e. with least significant digits first.
-   // Now reverse the string.
-   //
-   --buf;
-   while (start < buf)
-   {
-      char a = *start;
-      *start = *buf;
-      *buf = a;
-      ++start;
-      --buf;
-   }
-
-   return 0;
+float distanceSquared(const struct vector2 *object, const struct vector2 *other) {
+	// Pythagoras
+	return (object->x - other->x) *(object->x - other->x) +
+		(object->y - other->y) *(object->y - other->y);
 }
 
-void labwork( void )
-{
-	char snum[32];
+void labwork(void) {
+	// Clear screen buffer
+	clear();
 
-  //convert 123 to string [buf]
-  clear();
-	/*
-  time2string( textstring, mytime );
-  display_string( 3, textstring );
-  display_update();
-  tick( &mytime );
-  display_image(loops%96, icon);
-  */
-  int i;
-  for(i = 0; i < MAX_ENEMY_AMOUNT; i++ ) {
-  if(enemies[i].isActive)
-	enemy_bird_update(&enemies[i]);
-  } 
-  
-  spawnEnemy(enemies);
-  
-  for(i = 0; i < MAX_ENEMY_AMOUNT; i++ ) {
-  if(enemies[i].isActive)
-  buffer_make((int)(enemies[i].position.x), (int)(enemies[i].position.y), &maincharacter);
-  }
-  
-  
-  buffer_make(32, 16, &maincharacter);
-  display_image_128(0, toscreenbuffer());
-  /*
-  integer_to_string(&snum, 4, (int)(enemy1.position.y));
-  display_string( 1, snum);
-  display_update();
-  */
-  //loops++;
+	// Show game over screen
+	if (gameOver) {
+		buffer_make(0, 0, &gameover);
+		display_image_128(0, toscreenbuffer());
+		return;
+	}
+
+	// Update background
+	int i;
+	for (i = 0; i < MAX_CLOUD_AMOUNT; i++) {
+		if (clouds[i].isActive)
+			cloud_update(&clouds[i]);
+	}
+
+	// update enemies
+	for (i = 0; i < MAX_ENEMY_AMOUNT; i++) {
+		if (enemies[i].isActive)
+			enemy_bird_update(&enemies[i]);
+	}
+
+	// check collision
+	for (i = 0; i < MAX_ENEMY_AMOUNT; i++) {
+		if (enemies[i].isActive) {
+			if (distanceSquared(&enemies[i].position, &player.position) < 7)
+				gameOver = 0;
+		}
+	}
+
+	// Spawn new enemies and backgrounds
+	spawnEnemy(enemies);
+	spawnCloud(clouds);
+
+	// Draw enemies
+	for (i = 0; i < MAX_ENEMY_AMOUNT; i++) {
+		if (enemies[i].isActive) {
+			buffer_make((int)(enemies[i].position.x), (int)(enemies[i].position.y),
+				enemies[i].sprite);
+		}
+	}
+
+	// Draw clouds
+	for (i = 0; i < MAX_CLOUD_AMOUNT; i++) {
+		if (clouds[i].isActive) {
+			buffer_make((int)(clouds[i].position.x), (int)(clouds[i].position.y),
+				clouds[i].sprite);
+		}
+	}
+
+	//Convert to IOShield data format
+	buffer_make((int) player.position.x, (int) player.position.y, player.sprite);
+	display_image_128(0, toscreenbuffer());
 }

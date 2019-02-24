@@ -2,5 +2,5 @@
 #define ENEMYSPAWNER
 #include "enemy.h"
 #include "Constants.h"
-void spawnEnemy(struct enemy_bird * enemies);
+void spawnEnemy(struct bird * enemies);
 #endif

@@ -95,13 +95,14 @@ public class Main {
             e.printStackTrace();
         }
 
-
+        System.out.println("" + image.getWidth()+ "," + image.getHeight()+",");
         for(int y = 0; y < image.getHeight(); y++){
             for(int x = 0; x < image.getWidth(); x++) {
             int pixel = image.getRGB(x,y) == -1 ? 0 : 1;
-            if(x == image.getWidth()-1)
-                System.out.print("\n");
+
             System.out.print(""+pixel+",");
+                if(x == image.getWidth()-1)
+                    System.out.print("\n");
             }
     }
 
@@ -126,3 +127,5 @@ public class Main {
 
     }
 }
+
+

@@ -1,6 +1,6 @@
-enemy.c.o: enemy.c enemy.h /opt/mcb32tools/include/stdint.h \
+enemy.c.o: enemy.c enemy.h bird.h /opt/mcb32tools/include/stdint.h \
  /opt/mcb32tools/lib/gcc/mipsel-mcb32-elf/4.9.2/include/stdint-gcc.h \
  constants.h
-enemy.c enemy.h /opt/mcb32tools/include/stdint.h :
+enemy.c enemy.h bird.h /opt/mcb32tools/include/stdint.h :
  /opt/mcb32tools/lib/gcc/mipsel-mcb32-elf/4.9.2/include/stdint-gcc.h :
  constants.h :
