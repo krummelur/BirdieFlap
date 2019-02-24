@@ -1,3 +1,4 @@
 *.elf
 *.hex
 ImageEncoder/out/*
+ImageEncoder/.idea/workspace.xml
