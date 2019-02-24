@@ -15,8 +15,10 @@
 #include "mipslab.h"  /* Declatations for these labs */
 #include "enemy.h"  /* Declatations for these labs */
 #include "timeKeeper.h"  /* Declatations for these labs */
+#include "Constants.h"	/*	CONSTANTS */
+#include "EnemySpawner.h"	/*	CONSTANTS */
 
-struct enemy_bird enemy1;
+struct enemy_bird enemies[MAX_ENEMY_AMOUNT];
 
 int mytime = 0x5957;
 int loops =0;
@@ -49,12 +51,31 @@ void labinit( void )
 {
 	init_interrupts();
 	
-	
+	/*
+	struct enemy_bird enemy1;
 	struct vector2 enemy1Position;
-	enemy1.position.x = 96;
-	enemy1.position.y = 16;
+	enemy1.isActive = 1;
+	enemy1Position.x = 96.0;
+	enemy1Position.y = 16.0;
 	enemy1.position = enemy1Position;
 	enemy1.horizontalSpeed = 0.1;
+	enemies[0] = enemy1;
+	*/
+	struct enemy_bird inactiveEnemy5;
+	inactiveEnemy5.isActive = 0;
+	struct enemy_bird inactiveEnemy1;
+	inactiveEnemy1.isActive = 0;
+	struct enemy_bird inactiveEnemy2;
+	inactiveEnemy2.isActive = 0;
+	struct enemy_bird inactiveEnemy3;
+	inactiveEnemy3.isActive = 0;
+	struct enemy_bird inactiveEnemy4;
+	inactiveEnemy4.isActive = 0;
+	enemies[1] = inactiveEnemy1; 
+	enemies[2] = inactiveEnemy2; 
+	enemies[3] = inactiveEnemy3; 
+	enemies[4] = inactiveEnemy4; 
+	enemies[5] = inactiveEnemy5; 
   return;
 }
 
@@ -75,7 +96,7 @@ void labwork( void )
 
 
 //BORROWED FROM https://stackoverflow.com/questions/11819837/converting-integer-to-string-in-c-without-sprintf
-int integer_to_string(char *buf, size_t bufsize, int n)
+int integer_to_string(char *buf, int bufsize, int n)
 {
    char *start;
 
@@ -136,8 +157,8 @@ void labwork( void )
 {
 	char snum[32];
 
-// convert 123 to string [buf]
-  //clear();
+  //convert 123 to string [buf]
+  clear();
 	/*
   time2string( textstring, mytime );
   display_string( 3, textstring );
@@ -145,17 +166,26 @@ void labwork( void )
   tick( &mytime );
   display_image(loops%96, icon);
   */
-  /*
-  enemy_bird_update(&enemy1);
-  buffer_make((int)(enemy1.position.y), 16, &maincharacter);
+  int i;
+  for(i = 0; i < MAX_ENEMY_AMOUNT; i++ ) {
+  if(enemies[i].isActive)
+	enemy_bird_update(&enemies[i]);
+  } 
+  
+  spawnEnemy(enemies);
+  
+  for(i = 0; i < MAX_ENEMY_AMOUNT; i++ ) {
+  if(enemies[i].isActive)
+  buffer_make((int)(enemies[i].position.x), (int)(enemies[i].position.y), &maincharacter);
+  }
   
   
   buffer_make(32, 16, &maincharacter);
-  //display_image_128(0, toscreenbuffer());
-  delay( 200 );
-  //num32asc(&snum, 120);
-  */
+  display_image_128(0, toscreenbuffer());
+  /*
+  integer_to_string(&snum, 4, (int)(enemy1.position.y));
   display_string( 1, snum);
   display_update();
+  */
   //loops++;
 }

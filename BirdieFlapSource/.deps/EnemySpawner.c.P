@@ -1,0 +1,8 @@
+EnemySpawner.c.o: EnemySpawner.c EnemySpawner.h enemy.h \
+ /opt/mcb32tools/include/stdint.h \
+ /opt/mcb32tools/lib/gcc/mipsel-mcb32-elf/4.9.2/include/stdint-gcc.h \
+ Constants.h
+EnemySpawner.c EnemySpawner.h enemy.h :
+ /opt/mcb32tools/include/stdint.h :
+ /opt/mcb32tools/lib/gcc/mipsel-mcb32-elf/4.9.2/include/stdint-gcc.h :
+ Constants.h :
