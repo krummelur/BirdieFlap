@@ -1,0 +1,2 @@
+enemy.c.o: enemy.c enemy.h
+enemy.c enemy.h :

@@ -7,12 +7,12 @@ uint8_t displaybuffer[128*4];
 void clear() {
 	int r;
 	for(r = 0; r < 128*32; r++)
-		megabuffer[r] = 1;
+		megabuffer[r] = 0;
 }
 
 void buffer_make(int x, int y, uint8_t *sprite){
-	int width = 16;
-	int height = 16;
+	int width = 7;
+	int height = 6;
 
 	int sy;
 	int sx;

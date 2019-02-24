@@ -216,7 +216,7 @@ const uint8_t const maincharacter[] = {
 0,
 };
 
-const uint8_t const enemy1[] = {
+const uint8_t const enemy1_image[] = {
 	
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -233,7 +233,7 @@ const uint8_t const enemy1[] = {
 };
 	
 	
-const uint8_t const enemy2[] = {
+const uint8_t const enemy2_image[] = {
 		
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -249,7 +249,7 @@ const uint8_t const enemy2[] = {
 0,
 };
 
-const uint8_t const enemy3[] = {
+const uint8_t const enemy3_image[] = {
 	
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,
@@ -265,7 +265,7 @@ const uint8_t const enemy3[] = {
 0,		
 };			
 			
-const uint8_t const enemy4[] = {
+const uint8_t const enemy4_image[] = {
 	
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

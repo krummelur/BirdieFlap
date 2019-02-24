@@ -103,3 +103,12 @@ inner:
 counterdone:
 	jr	$ra
 	nop
+	
+	##############################
+	#####  ENABLE INTERRUPTS  ####
+	##############################
+.globl enable_interrupts
+enable_interrupts:
+	ei
+	jr $ra
+	nop
