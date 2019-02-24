@@ -69,12 +69,23 @@ public class Main {
 
     public static void main(String[] args) {
         //debug for buffer c class
-        buffer_make(0,0);
-        toscreenbuffer();
+        //buffer_make(0,0);
+        //toscreenbuffer();
+
+        //args = new String[]{"image1.png"};
+
+        if (args.length == 0 ) {
+           System.out.println("no image file was given add a filename as argument");
+           System.exit(-1);
+        }
+
+        if (args[0].equals("")) {
+            System.out.println("no image file was given add a filename as argument");
+            System.exit(-1);
+        }
 
 
-        /*
-        File imageFile = new File("test.png");
+        File imageFile = new File(args[0]);
 
         String str  = "";
         BufferedImage image = null;
@@ -93,8 +104,8 @@ public class Main {
             System.out.print(""+pixel+",");
             }
     }
-    */
-/*
+
+    /*
         for (int y = 0; y < image.getHeight()/8; y++) {
             for(int x = 0; x < image.getWidth(); x++) {
                 int sum = 0;
