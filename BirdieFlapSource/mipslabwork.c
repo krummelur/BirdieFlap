@@ -25,7 +25,7 @@ struct bird player;
 int mytime = 0x5957;
 int loops = 0;
 char textstring[] = "text, more text, and even more text!";
-int gameOver = 0;
+int gameOver;
 
 /* Interrupt Service Routine */
 void user_isr(void) {
@@ -38,7 +38,7 @@ void user_isr(void) {
 }
 
 int getbtns() {
-		return (*(volatile int*)PORTD & 0x000000f0) >> 4;
+		return (*(volatile int*)PORTD & 0x00000e0) >> 5;
 }
 
 void button_update(void){
@@ -47,26 +47,21 @@ void button_update(void){
 
 	if(btns){
 
-		if(btns & 0x1){
-			return;
+		if(btns & 0x1)
+			labinit();
+
+		if(btns & 0x2)
+			player.verticalSpeed += 0.015;
+
+		if(btns & 0x4)
+			player.verticalSpeed -= 0.015;
 		}
-		if(btns & 0x2){
-			return;
-		}
-		if(btns & 0x4){
-			return;
-		}
-		if(btns & 0x8){
-			return;
-		}
+
+		if(!(btns))
+			player.verticalSpeed = player.verticalSpeed/6;
+
 	}
-}
 
-int getbtns() {
-	return (*(volatile int*)PORTD & 0x000000f0) >> 4;
-}
-
-int btns = getbtns();
 
 
 
@@ -85,13 +80,16 @@ void init_interrupts(void) {
 void labinit(void) {
 	init_interrupts();
 
+	*(volatile int*)TRISD = *(int*)TRISD | 0xf0;
+
 	struct bird inactiveEnemy;
 	inactiveEnemy.isActive = 0;
+	enemies[0] = inactiveEnemy;
 	enemies[1] = inactiveEnemy;
 	enemies[2] = inactiveEnemy;
 	enemies[3] = inactiveEnemy;
 	enemies[4] = inactiveEnemy;
-	enemies[5] = inactiveEnemy;
+
 
 	player = (struct bird)
 	{
@@ -99,6 +97,7 @@ void labinit(void) {
 		{ 32, 16 }, maincharacter,
 	};
 
+	gameOver = 0;
 	return;
 }
 
@@ -111,10 +110,8 @@ float distanceSquared(const struct vector2 *object, const struct vector2 *other)
 void labwork(void) {
 	// Clear screen buffer
 	clear();
-	if (getbtns)
-		return;
 
-	button_update)();
+	button_update();
 
 	// Show game over screen
 	if (gameOver) {
@@ -130,6 +127,7 @@ void labwork(void) {
 			cloud_update(&clouds[i]);
 	}
 
+	update_main_character(&player);
 	// update enemies
 	for (i = 0; i < MAX_ENEMY_AMOUNT; i++) {
 		if (enemies[i].isActive)
