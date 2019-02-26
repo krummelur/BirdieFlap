@@ -37,6 +37,39 @@ void user_isr(void) {
 	return;
 }
 
+int getbtns() {
+		return (*(volatile int*)PORTD & 0x000000f0) >> 4;
+}
+
+void button_update(void){
+
+	int btns = getbtns();
+
+	if(btns){
+
+		if(btns & 0x1){
+			return;
+		}
+		if(btns & 0x2){
+			return;
+		}
+		if(btns & 0x4){
+			return;
+		}
+		if(btns & 0x8){
+			return;
+		}
+	}
+}
+
+int getbtns() {
+	return (*(volatile int*)PORTD & 0x000000f0) >> 4;
+}
+
+int btns = getbtns();
+
+
+
 void init_interrupts(void) {
 
 	T2CON = 0x10;
@@ -60,7 +93,7 @@ void labinit(void) {
 	enemies[4] = inactiveEnemy;
 	enemies[5] = inactiveEnemy;
 
-	player = (struct bird) 
+	player = (struct bird)
 	{
 		1, 0, 0,
 		{ 32, 16 }, maincharacter,
@@ -78,6 +111,10 @@ float distanceSquared(const struct vector2 *object, const struct vector2 *other)
 void labwork(void) {
 	// Clear screen buffer
 	clear();
+	if (getbtns)
+		return;
+
+	button_update)();
 
 	// Show game over screen
 	if (gameOver) {
