@@ -21,6 +21,7 @@
 struct bird enemies[MAX_ENEMY_AMOUNT];
 struct cloud clouds[MAX_CLOUD_AMOUNT];
 struct bird player;
+void labinit(void);
 
 int mytime = 0x5957;
 int loops = 0;
@@ -51,14 +52,14 @@ void button_update(void){
 			labinit();
 
 		if(btns & 0x2)
-			player.verticalSpeed += 0.015;
+			player.verticalSpeed += 0.025;
 
 		if(btns & 0x4)
-			player.verticalSpeed -= 0.015;
+			player.verticalSpeed -= 0.025;
 		}
 
 		if(!(btns))
-			player.verticalSpeed = player.verticalSpeed/6;
+			player.verticalSpeed = player.verticalSpeed/1.4;
 
 	}
 
@@ -101,10 +102,26 @@ void labinit(void) {
 	return;
 }
 
-float distanceSquared(const struct vector2 *object, const struct vector2 *other) {
+float distanceSquared(const struct vector2 *object, const struct vector2 *other, int * objectOffset, int * otherOffset) {
 	// Pythagoras
-	return (object->x - other->x) *(object->x - other->x) +
-		(object->y - other->y) *(object->y - other->y);
+  int otherXcenter = other->x+(otherOffset[0]/2);
+  int otherYcenter = other->y+(otherOffset[1]/2);
+  int objectXcenter = object->x+(otherOffset[0]/2);
+  int objectYcenter = object->y+(otherOffset[1]/2);
+	return (objectXcenter - otherXcenter) *(objectXcenter - otherXcenter) +
+		(objectYcenter - otherYcenter) *(objectYcenter - otherYcenter);
+}
+
+int checkCollision(const struct vector2 *object, const struct vector2 *other, int * objectdimensions, int * otherDimensions) {
+  int deltaX = object->x - other->x;
+  int deltaY = object->y - other->y;
+  deltaX = (deltaX >= 0) ? deltaX : -1* deltaX;
+  deltaY = (deltaY >= 0) ? deltaY : -1* deltaY;
+  if ((deltaX) < (objectdimensions[0]/2)+(otherDimensions[0]/2) &&
+      ((deltaY) < (objectdimensions[1]/2)+(otherDimensions[1]/2))) {
+        return 1;
+      }
+  return 0;
 }
 
 void labwork(void) {
@@ -135,12 +152,17 @@ void labwork(void) {
 	}
 
 	// check collision
-	for (i = 0; i < MAX_ENEMY_AMOUNT; i++) {
-		if (enemies[i].isActive) {
-			if (distanceSquared(&enemies[i].position, &player.position) < 7)
-				gameOver = 0;
+	for(i = 0; i < MAX_ENEMY_AMOUNT; i++) {
+    int dim[] = {5,5};
+    if (enemies[i].isActive) {
+			if (checkCollision(&(enemies[i].position), &(player.position), dim, dim)) {
+				gameOver = 1;
 		}
 	}
+}
+  //(int *){enemies[i].sprite[0],enemies[i].sprite[1]},
+  //(int *){player.sprite[0],player.sprite[1]})
+
 
 	// Spawn new enemies and backgrounds
 	spawnEnemy(enemies);

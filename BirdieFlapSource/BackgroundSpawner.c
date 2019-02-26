@@ -2,7 +2,7 @@
 #include <pic32mx.h>
 #include "mipslab.h"
 
-uint8_t *backgroundSprites[] = {&cloud1};
+const uint8_t const *  backgroundSprites[] = {cloud1};
 
 int cloudPreviousTime = 0;
 int cloudSpawnTime = 1000;
@@ -20,8 +20,8 @@ void spawnCloud(struct cloud * clouds) {
 	}
 	if(foundCloud == -1)
 		return;
-	
-	struct cloud cloud_ = 
+
+	struct cloud cloud_ =
 	{
 		1,
 		((float)(TMR2 % 1000))/4000.0 + 0.06,
@@ -29,6 +29,6 @@ void spawnCloud(struct cloud * clouds) {
 		{128-32, 0},
 		backgroundSprites[(TMR2 % 1)]
 	};
-		clouds[i] = cloud_;	
+		clouds[i] = cloud_;
 }
 }

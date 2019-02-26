@@ -18,7 +18,7 @@ void cloud_update(struct cloud * cloud_) {
 	}
 }
 
-update_main_character(struct bird * mainCharacter) {
+void update_main_character(struct bird * mainCharacter) {
 	//apply gravity
 	mainCharacter->position.y += mainCharacter->verticalSpeed;
 	mainCharacter->position.x += mainCharacter->horizontalSpeed;

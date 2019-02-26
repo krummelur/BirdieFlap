@@ -2,7 +2,7 @@
 #include <pic32mx.h>
 #include "mipslab.h"
 
-uint8_t *enemySprites[] = {&enemy1, &enemy2, &enemy3, &enemy4};
+const uint8_t const * enemySprites[] = {enemy1, enemy2, enemy3, enemy4};
 
 int previousTime = 0;
 int spawnTime = 1000;
@@ -20,7 +20,7 @@ void spawnEnemy(struct bird * enemies) {
 	}
 	if(foundEnemy == -1)
 		return;
-	
+
 	struct bird enemy = {
 		1,
 		((float)(TMR2 % 1000))/4000.0 + 0.06,
@@ -28,6 +28,6 @@ void spawnEnemy(struct bird * enemies) {
 		{128-16, 8 + (TMR2 % 24)},
 		enemySprites[(TMR2 % 4)]
 	};
-		enemies[i] = enemy;	
+		enemies[i] = enemy;
 }
 }
