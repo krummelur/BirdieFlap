@@ -59,7 +59,7 @@ void button_update(void){
 		}
 
 		if(!(btns))
-			player.verticalSpeed = player.verticalSpeed/1.4;
+			player.verticalSpeed = player.verticalSpeed/1.05;
 
 	}
 
