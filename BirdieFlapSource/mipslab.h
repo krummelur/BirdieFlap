@@ -49,7 +49,18 @@ extern const uint8_t const enemy2[5*6+2];
 extern const uint8_t const enemy3[10*6+2];
 extern const uint8_t const enemy4[5*5+2];
 extern const uint8_t const cloud1[29*16+2];
-
+extern const uint8_t const cloud2[24*14+2];
+extern const uint8_t const num0[3*5+2];
+extern const uint8_t const num1[3*5+2];
+extern const uint8_t const num2[3*5+2];
+extern const uint8_t const num3[3*5+2];
+extern const uint8_t const num4[3*5+2];
+extern const uint8_t const num5[3*5+2];
+extern const uint8_t const num6[3*5+2];
+extern const uint8_t const num7[3*5+2];
+extern const uint8_t const num8[3*5+2];
+extern const uint8_t const num9[3*5+2];
+extern const uint8_t const numPlate[14*7+2];
 /* Declare text buffer for display output */
 extern char textbuffer[4][16];
 

@@ -1,25 +1,28 @@
 #include "enemy.h"
 #include "constants.h"
+const float gravity = 0.004; 
 struct enemy_bird;
 struct vector2;
-void enemy_bird_update(struct bird * enemy) {
-	enemy->position.x -= enemy->horizontalSpeed;
 
-	if(enemy->position.x < 0) {
+void enemy_bird_update(struct bird * enemy, int deltaTime) {
+	enemy->position.x -= enemy->horizontalSpeed * ((float)(deltaTime)/deltaTimeScale);
+
+	if(enemy->position.x < -1*(enemy->sprite[0])) {
 		enemy->isActive = 0;
 	}
 }
 
-void cloud_update(struct cloud * cloud_) {
+void cloud_update(struct cloud * cloud_, int deltaTime) {
 	cloud_->position.x -= cloud_->horizontalSpeed;
 
-	if(cloud_->position.x < 0) {
+	if(cloud_->position.x < -1*(cloud_->sprite[0]) * ((float)(deltaTime)/deltaTimeScale)) {
 		cloud_->isActive = 0;
 	}
 }
 
-void update_main_character(struct bird * mainCharacter) {
+void update_main_character(struct bird * mainCharacter, int deltaTime) {
 	//apply gravity
-	mainCharacter->position.y += mainCharacter->verticalSpeed;
-	mainCharacter->position.x += mainCharacter->horizontalSpeed;
+	mainCharacter->verticalSpeed  += gravity * ((float)(deltaTime)/deltaTimeScale);
+	mainCharacter->position.y += mainCharacter->verticalSpeed * ((float)(deltaTime)/deltaTimeScale);
+	mainCharacter->position.x += mainCharacter->horizontalSpeed * ((float)(deltaTime)/deltaTimeScale);
 }

@@ -10,7 +10,7 @@ void clear()
 		megabuffer[r] = 0;
 }
 
-void buffer_make(int x, int y, uint8_t *sprite)
+void buffer_make(int x, int y, uint8_t *sprite, int mode)
 {
 	int width = (int) sprite[0];
 	int height = (int) sprite[1];
@@ -20,8 +20,15 @@ void buffer_make(int x, int y, uint8_t *sprite)
 	for (sy = 0; sy < height; sy++)
 	{
 		for (sx = 0; sx < width; sx++)
-		{
-			megabuffer[(sy + y) * 128 + x + sx] |= *(sprite + (sy *width + sx + 2));
+		{	
+			//Make sure not to draw outside the buffer
+			if((x+sx < 128 && sy+y < 32) && (x+sx >=0 && sy+y >= 0)) {
+				if (mode == 0) 
+					megabuffer[(sy + y) * 128 + x + sx] |= *(sprite + (sy *width + sx + 2));
+			
+				if (mode == 1) 
+					megabuffer[(sy + y) * 128 + x + sx] = *(sprite + (sy *width + sx + 2));
+			}
 		}
 	}
 }
