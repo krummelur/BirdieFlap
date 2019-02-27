@@ -1,6 +1,6 @@
 #include "enemy.h"
 #include "constants.h"
-const float gravity = 0.004; 
+const float gravity = 0.004;
 struct enemy_bird;
 struct vector2;
 
@@ -13,7 +13,9 @@ void enemy_bird_update(struct bird * enemy, int deltaTime) {
 }
 
 void cloud_update(struct cloud * cloud_, int deltaTime) {
+
 	cloud_->position.x -= cloud_->horizontalSpeed;
+	cloud_->position.y -= ((currentTimeMillis() / 3000) % 2 ) ? -1*cloud_->verticalSpeed : cloud_->verticalSpeed;
 
 	if(cloud_->position.x < -1*(cloud_->sprite[0]) * ((float)(deltaTime)/deltaTimeScale)) {
 		cloud_->isActive = 0;

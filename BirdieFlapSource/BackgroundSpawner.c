@@ -25,7 +25,7 @@ void spawnCloud(struct cloud * clouds) {
 	{
 		1,
 		((float)(TMR2 % 50))/1000.0 + 0.03,
-		0.0,
+		0.035,//((float)((TMR2 % 10))/50.0),
 		{128, -10 + (int)(TMR2 % 25)},
 		backgroundSprites[(TMR2 % 2)]
 	};

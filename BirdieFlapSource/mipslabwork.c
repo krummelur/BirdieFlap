@@ -47,13 +47,13 @@ show_score() {
 	int score_ = score;
 	int posX = 128-4;
 	int i;
-	int num; 
+	int num;
 		buffer_make(128-14, 1, numPlate, 1);
 	for(i = 0; i < 3; i++) {
 		buffer_make(posX, 1, numberSprites[score_%10], 0);
 		score_ /= 10;
 		posX -= 4;
-	} 
+	}
 }
 
 int getbtns() {
@@ -106,13 +106,13 @@ void labinit(void) {
 	int i;
 	for(i = 0; i < MAX_ENEMY_AMOUNT; i++)
 		enemies[i] = inactiveEnemy;
-	
+
 	struct cloud inactiveCloud;
 	inactiveCloud.isActive = 0;
-	
+
 	for(i = 0; i < MAX_CLOUD_AMOUNT; i++)
 		clouds[i] = inactiveCloud;
-	
+
 
 	player = (struct bird)
 	{
@@ -148,14 +148,14 @@ int checkCollision(const struct vector2 *object, const struct vector2 *other, in
 }
 
 void labwork(void) {
-	int deltaTime = currentTimeMillis() - previousFrame; 
+	int deltaTime = currentTimeMillis() - previousFrame;
 	previousFrame = currentTimeMillis();
 	//display_update();
 	//return;
 	// Clear screen buffer
 	clear();
 
-	//Make bird 
+	//Make bird
 	button_update(deltaTime*(1+((levelMultiplier-1)*0.2)));
 
 	// Show game over screen
@@ -182,10 +182,10 @@ void labwork(void) {
 
 	// check collision
 	for(i = 0; i < MAX_ENEMY_AMOUNT; i++) {
-    int dim[] = {5,5};
+    int dim[] = {4,4};
     if (enemies[i].isActive) {
 			if (checkCollision(&(enemies[i].position), &(player.position), dim, dim)) {
-				gameOver = 0;
+				gameOver = 1;
 		}
 	}
 }
@@ -217,11 +217,11 @@ void labwork(void) {
 	}
 
 	//Convert to IOShield data format
-	
+
 	buffer_make((int) player.position.x, (int) player.position.y, player.sprite, 0);
 	score = (currentTimeMillis()-startTime) / 1000 / 3;
 	levelMultiplier =  1+ 0.1*score;
 	show_score();
 	display_image_128(0, toscreenbuffer());
-	
+
 }
