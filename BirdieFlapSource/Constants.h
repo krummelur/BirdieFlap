@@ -4,4 +4,9 @@
 #define MAX_ENEMY_AMOUNT 5
 #define MAX_CLOUD_AMOUNT 3
 #define deltaTimeScale 10.0
+#define GAMESTATE_GAMEOVER 0
+#define GAMESTATE_GAMEENDED 1
+#define GAMESTATE_PLAYING 2
+#define GAMESTATE_ENTER_SCORE 3
+#define GAMESTATE_VIEW_SCORE 4
 #endif
