@@ -18,7 +18,18 @@
 #include "Constants.h"    /*	CONSTANTS */
 #include "EnemySpawner.h" /*	CONSTANTS */
 
+struct highScore {
+	char* name;
+	int score;
+};
+int currentEnteringScore = 0;
+int scoreStartX = 48;
+int scoreStartY = 12;
+int cursorPosition = 0;
+char gameState;
+struct highScore highScores[] = {(struct highScore){"MAG", 0},(struct highScore){"NUS", 0},(struct highScore){"GR8", 0}};
 const uint8_t * numberSprites[] = {num0, num1, num2, num3, num4, num5, num6, num7, num8, num9};
+const uint8_t * charSprites[] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, };
 struct bird enemies[MAX_ENEMY_AMOUNT];
 struct cloud clouds[MAX_CLOUD_AMOUNT];
 struct bird player;
@@ -30,7 +41,6 @@ int previousFrame = 0;
 int mytime = 0x5957;
 int loops = 0;
 char textstring[] = "text, more text, and even more text!";
-int gameOver;
 float levelMultiplier = 1.0;
 
 /* Interrupt Service Routine */
@@ -65,8 +75,9 @@ void button_update(int deltaTime){
 
 	if(btns){
 
-		if(btns & 0x1 && gameOver)
+		if(btns & 0x1 && (gameState == GAMESTATE_GAMEOVER || gameState == GAMESTATE_VIEW_SCORE)) {
 			labinit();
+		}
 
 		if(btns & 0x2)
 			player.verticalSpeed += 0.025 * ((float)(deltaTime)/deltaTimeScale);
@@ -121,7 +132,7 @@ void labinit(void) {
 	};
 
 	startTime = currentTimeMillis();
-	gameOver = 0;
+	gameState = GAMESTATE_PLAYING;
 	return;
 }
 
@@ -147,25 +158,62 @@ int checkCollision(const struct vector2 *object, const struct vector2 *other, in
   return 0;
 }
 
-void labwork(void) {
-	int deltaTime = currentTimeMillis() - previousFrame;
-	previousFrame = currentTimeMillis();
-	//display_update();
-	//return;
-	// Clear screen buffer
-	clear();
 
-	//Make bird
-	button_update(deltaTime*(1+((levelMultiplier-1)*0.2)));
+void getScoreSprites(struct highScore * curScore, uint8_t * scoreSprites[])
+{
+	int score_ = (*(curScore)).score;
+	int j;
+		for(j = 0; j < 3; j++) {
+			//different drawing code depending on alphabetical  or numerical
+			if((*curScore).name[j] < 65) { //numbers
+				scoreSprites[j] = numberSprites[(*(curScore)).name[j] - 48];
+			}
+			else {
+				scoreSprites[j] = charSprites[(*(curScore)).name[j] - 65];
+			}
 
-	// Show game over screen
-	if (gameOver) {
-		buffer_make(0, 0, &gameover, 0);
-		show_score();
-		display_image_128(0, toscreenbuffer());
-		return;
+			scoreSprites[5-j] = numberSprites[score_%10];
+			score_/=10;
+		}
+}
+
+gameOver_Update(int deltaTime) {
+	buffer_make(0, 0, &gameover, 0);
+	show_score();
+	return;
+}
+
+gameEnded_Update(int deltaTime) {
+	int i;
+	for(i = 0; i < 3; i++) {
+		if(score > highScores[i].score) {
+			for(i = 0; i < 3; i++) {
+				if(score > highScores[i].score) {
+					highScores[i] = (struct highScore){"AAA", 000};
+					currentEnteringScore = i;
+					i = 3;
+				}
+			gameState = GAMESTATE_ENTER_SCORE;
+			return;
+		}
+
 	}
+	gameState = GAMESTATE_GAMEOVER;
+}
+}
 
+void enterScore_update(int deltaTime) {
+
+	//render out score like normally
+	viewScore_update(deltaTime);
+	//draw cursor
+	buffer_make(scoreStartX+(cursorPosition*4)-1, scoreStartY+(currentEnteringScore*7)-1, &cursorSprite, 0);
+
+
+
+}
+
+gamePlaying_update(int deltaTime) {
 	// Update background
 	int i;
 	for (i = 0; i < MAX_CLOUD_AMOUNT; i++) {
@@ -182,18 +230,17 @@ void labwork(void) {
 
 	// check collision
 	for(i = 0; i < MAX_ENEMY_AMOUNT; i++) {
-    int dim[] = {4,4};
-    if (enemies[i].isActive) {
+		int dim[] = {4,4};
+		if (enemies[i].isActive) {
 			if (checkCollision(&(enemies[i].position), &(player.position), dim, dim)) {
-				gameOver = 1;
+				gameState = GAMESTATE_GAMEENDED;
+			}
 		}
 	}
-}
 
 	//Check other gameover triggers
-	if(player.position.y > 34 ||
-		player.position.y < -8) {
-			gameOver = 1;
+	if(player.position.y > 34 || player.position.y < -8) {
+			gameState = GAMESTATE_GAMEENDED;
 		}
 
 	// Spawn new enemies and backgrounds
@@ -217,11 +264,63 @@ void labwork(void) {
 	}
 
 	//Convert to IOShield data format
-
 	buffer_make((int) player.position.x, (int) player.position.y, player.sprite, 0);
 	score = (currentTimeMillis()-startTime) / 1000 / 3;
 	levelMultiplier =  1+ 0.1*score;
 	show_score();
-	display_image_128(0, toscreenbuffer());
+}
 
+viewScore_update(int deltaTime) {
+	buffer_make(0, 0, &viewHighScoreScreen, 0);
+
+	//Construct spriteBuffer
+	int i;
+	for (i = 0; i < 3; i++  ){
+
+		uint8_t * scoreSprites[6];
+		getScoreSprites(&highScores[i], scoreSprites);
+		buffer_make(scoreStartX-7, scoreStartY+(i*7), numberSprites[i+1]);
+		int j;
+		for(j= 0; j < 3; j++)
+		buffer_make(scoreStartX+(j*4), scoreStartY+(i*7), scoreSprites[j], 0);
+
+		for(j= 0; j < 3; j++)
+		buffer_make(scoreStartX+16+(j*4), scoreStartY+(i*7), scoreSprites[j+3], 0);
+	}
+	return;
+}
+
+
+
+void labwork(void) {
+	int deltaTime = currentTimeMillis() - previousFrame;
+	previousFrame = currentTimeMillis();
+	//display_update();
+	//return;
+	// Clear screen buffer
+	clear();
+
+	button_update(deltaTime*(1+((levelMultiplier-1)*0.2)));
+
+	switch(gameState) {
+	   case GAMESTATE_GAMEOVER  :
+	      	gameOver_Update(deltaTime);
+	      break;
+
+		 case GAMESTATE_GAMEENDED  :
+	      	gameEnded_Update(deltaTime);
+	      break;
+     case GAMESTATE_PLAYING  :
+					gamePlaying_update(deltaTime);
+		 break;
+
+		 case GAMESTATE_ENTER_SCORE  :
+	      	enterScore_update(deltaTime);
+     break;
+
+		 case GAMESTATE_VIEW_SCORE  :
+	      viewScore_update(deltaTime);
+     break;
+	}
+		display_image_128(0, toscreenbuffer());
 }

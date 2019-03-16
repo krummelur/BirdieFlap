@@ -20,14 +20,16 @@ void buffer_make(int x, int y, uint8_t *sprite, int mode)
 	for (sy = 0; sy < height; sy++)
 	{
 		for (sx = 0; sx < width; sx++)
-		{	
+		{
 			//Make sure not to draw outside the buffer
 			if((x+sx < 128 && sy+y < 32) && (x+sx >=0 && sy+y >= 0)) {
-				if (mode == 0) 
+				if (mode == 0)
 					megabuffer[(sy + y) * 128 + x + sx] |= *(sprite + (sy *width + sx + 2));
-			
-				if (mode == 1) 
+
+				if (mode == 1)
 					megabuffer[(sy + y) * 128 + x + sx] = *(sprite + (sy *width + sx + 2));
+				if (mode = 2)
+					megabuffer[(sy + y) * 128 + x + sx] = ~megabuffer[(sy + y) * 128 + x + sx];
 			}
 		}
 	}
