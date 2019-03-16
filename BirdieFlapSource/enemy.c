@@ -17,7 +17,7 @@ void cloud_update(struct cloud * cloud_, int deltaTime) {
 	cloud_->position.x -= cloud_->horizontalSpeed;
 	cloud_->position.y -= ((currentTimeMillis() / 3000) % 2 ) ? -1*cloud_->verticalSpeed : cloud_->verticalSpeed;
 
-	if(cloud_->position.x < -1*(cloud_->sprite[0]) * ((float)(deltaTime)/deltaTimeScale)) {
+	if(cloud_->position.x < -1*(cloud_->sprite[0])) {
 		cloud_->isActive = 0;
 	}
 }

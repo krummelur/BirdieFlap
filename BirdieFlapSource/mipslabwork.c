@@ -65,7 +65,7 @@ void button_update(int deltaTime){
 
 	if(btns){
 
-		if(btns & 0x1)
+		if(btns & 0x1 && gameOver)
 			labinit();
 
 		if(btns & 0x2)
