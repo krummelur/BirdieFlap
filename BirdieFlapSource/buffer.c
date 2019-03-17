@@ -28,8 +28,8 @@ void buffer_make(int x, int y, uint8_t *sprite, int mode)
 
 				if (mode == 1)
 					megabuffer[(sy + y) * 128 + x + sx] = *(sprite + (sy *width + sx + 2));
-				if (mode = 2)
-					megabuffer[(sy + y) * 128 + x + sx] = ~megabuffer[(sy + y) * 128 + x + sx];
+				if (mode == 2)
+					megabuffer[(sy + y) * 128 + x + sx] = !(megabuffer[(sy + y) * 128 + x + sx]);
 			}
 		}
 	}

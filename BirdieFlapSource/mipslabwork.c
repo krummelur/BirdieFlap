@@ -19,12 +19,15 @@
 #include "EnemySpawner.h" /*	CONSTANTS */
 
 struct highScore {
-	char* name;
+	char name[3];
 	int score;
 };
+int waitingCooldown();
+
+int hsEnterCooldown = 0;
 int currentEnteringScore = 0;
-int scoreStartX = 48;
-int scoreStartY = 12;
+int scoreStartX = 51;
+int scoreStartY = 11;
 int cursorPosition = 0;
 char gameState;
 struct highScore highScores[] = {(struct highScore){"MAG", 0},(struct highScore){"NUS", 0},(struct highScore){"GR8", 0}};
@@ -34,7 +37,7 @@ struct bird enemies[MAX_ENEMY_AMOUNT];
 struct cloud clouds[MAX_CLOUD_AMOUNT];
 struct bird player;
 void labinit(void);
-int score;
+int score = 0;
 int startTime = 0;
 int previousFrame = 0;
 
@@ -70,27 +73,85 @@ int getbtns() {
 		return (*(volatile int*)PORTD & 0x00000e0) >> 5;
 }
 
+void setCooldown(int millis) {
+	hsEnterCooldown = millis + currentTimeMillis();
+}
+
+
 void button_update(int deltaTime){
 	int btns = getbtns();
-
-	if(btns){
-
-		if(btns & 0x1 && (gameState == GAMESTATE_GAMEOVER || gameState == GAMESTATE_VIEW_SCORE)) {
-			labinit();
-		}
-
-		if(btns & 0x2)
+	if(gameState == GAMESTATE_PLAYING) {
+		if(btns & 0x2) {
 			player.verticalSpeed += 0.025 * ((float)(deltaTime)/deltaTimeScale);
-
-		if(btns & 0x4)
+		} else if (btns & 0x4) {
 			player.verticalSpeed -= 0.040 * ((float)(deltaTime)/deltaTimeScale);
-		}
-
-		if(!(btns) && player.verticalSpeed < 0) {
+		} else if (!btns && player.verticalSpeed < 0){
 			player.verticalSpeed = player.verticalSpeed/1.1;
 		}
+	} else {
+	if(btns && !waitingCooldown()){
+		if(gameState == GAMESTATE_VIEW_SCORE) {
+			setCooldown(200);
+			gameState = GAMESTATE_GAMEOVER;
+			return;
+		}
 
+
+	if(btns & 0x1) {
+		if(gameState == GAMESTATE_GAMEOVER) {
+			setCooldown(150);
+			labinit();
+			return;
+		}
+		if(GAMESTATE_ENTER_SCORE) {
+			setCooldown(300);
+			cursorPosition++;
+			if(cursorPosition > 2) {
+				gameState = GAMESTATE_VIEW_SCORE;
+				return;
+			}
+		}
 	}
+
+		if(btns & 0x2) {
+			if(gameState == GAMESTATE_ENTER_SCORE) {
+				if(highScores[currentEnteringScore].name[cursorPosition] == 'Z') {
+					highScores[currentEnteringScore].name[cursorPosition] = '0';
+				}
+				else if(highScores[currentEnteringScore].name[cursorPosition] == '9') {
+					highScores[currentEnteringScore].name[cursorPosition] = 'A';
+				}
+				else {
+					highScores[currentEnteringScore].name[cursorPosition] = highScores[currentEnteringScore].name[cursorPosition]+1;
+				}
+				setCooldown(160);
+				return;
+			}
+		}
+
+		if(btns & 0x4) {
+			if(gameState == GAMESTATE_ENTER_SCORE) {
+				if(highScores[currentEnteringScore].name[cursorPosition] == 'A') {
+					highScores[currentEnteringScore].name[cursorPosition] = '9';
+				}
+				else if(highScores[currentEnteringScore].name[cursorPosition] == '0') {
+					highScores[currentEnteringScore].name[cursorPosition] = 'Z';
+				}
+				else {
+					highScores[currentEnteringScore].name[cursorPosition] = highScores[currentEnteringScore].name[cursorPosition]-1;
+				}
+				setCooldown(160);
+				return;
+		}
+		if(gameState == GAMESTATE_GAMEOVER) {
+			gameState = GAMESTATE_VIEW_SCORE;
+			setCooldown(200);
+			return;
+			}
+		}
+	}
+}
+}
 
 
 
@@ -159,6 +220,11 @@ int checkCollision(const struct vector2 *object, const struct vector2 *other, in
 }
 
 
+
+int waitingCooldown() {
+	return !(currentTimeMillis() > hsEnterCooldown);
+}
+
 void getScoreSprites(struct highScore * curScore, uint8_t * scoreSprites[])
 {
 	int score_ = (*(curScore)).score;
@@ -185,21 +251,25 @@ gameOver_Update(int deltaTime) {
 
 gameEnded_Update(int deltaTime) {
 	int i;
-	for(i = 0; i < 3; i++) {
-		if(score > highScores[i].score) {
 			for(i = 0; i < 3; i++) {
 				if(score > highScores[i].score) {
-					highScores[i] = (struct highScore){"AAA", 000};
-					currentEnteringScore = i;
-					i = 3;
-				}
-			gameState = GAMESTATE_ENTER_SCORE;
-			return;
-		}
 
-	}
+					//Patch the old scores
+					int j;
+					for (j = 2; j > i; j--) {
+					highScores[j] = highScores[j-1];
+					}
+
+					highScores[i] = (struct highScore){"AAA", score};
+					currentEnteringScore = i;
+					gameState = GAMESTATE_ENTER_SCORE;
+					cursorPosition = 0;
+					setCooldown(2000);
+					return;
+				}
+		}
+		setCooldown(150);
 	gameState = GAMESTATE_GAMEOVER;
-}
 }
 
 void enterScore_update(int deltaTime) {
@@ -207,10 +277,7 @@ void enterScore_update(int deltaTime) {
 	//render out score like normally
 	viewScore_update(deltaTime);
 	//draw cursor
-	buffer_make(scoreStartX+(cursorPosition*4)-1, scoreStartY+(currentEnteringScore*7)-1, &cursorSprite, 0);
-
-
-
+	buffer_make(scoreStartX+(cursorPosition*4)-1, scoreStartY+(currentEnteringScore*7)-1, &cursorSprite, 2);
 }
 
 gamePlaying_update(int deltaTime) {
