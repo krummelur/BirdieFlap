@@ -27,10 +27,10 @@ int waitingCooldown();
 int hsEnterCooldown = 0;
 int currentEnteringScore = 0;
 int scoreStartX = 51;
-int scoreStartY = 11;
+int scoreStartY = 3;
 int cursorPosition = 0;
 char gameState;
-struct highScore highScores[] = {(struct highScore){"MAG", 0},(struct highScore){"NUS", 0},(struct highScore){"GR8", 0}};
+struct highScore highScores[] = {(struct highScore){"MAG", 0},(struct highScore){"NUS", 0},(struct highScore){"GR8", 0},(struct highScore){"JOB", 0}};
 const uint8_t * numberSprites[] = {num0, num1, num2, num3, num4, num5, num6, num7, num8, num9};
 const uint8_t * charSprites[] = {A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, };
 struct bird enemies[MAX_ENEMY_AMOUNT];
@@ -251,12 +251,12 @@ gameOver_Update(int deltaTime) {
 
 gameEnded_Update(int deltaTime) {
 	int i;
-			for(i = 0; i < 3; i++) {
+			for(i = 0; i < NUM_HIGHSCORES; i++) {
 				if(score > highScores[i].score) {
 
 					//Patch the old scores
 					int j;
-					for (j = 2; j > i; j--) {
+					for (j = NUM_HIGHSCORES-1; j > i; j--) {
 					highScores[j] = highScores[j-1];
 					}
 
@@ -342,7 +342,7 @@ viewScore_update(int deltaTime) {
 
 	//Construct spriteBuffer
 	int i;
-	for (i = 0; i < 3; i++  ){
+	for (i = 0; i < NUM_HIGHSCORES; i++  ){
 
 		uint8_t * scoreSprites[6];
 		getScoreSprites(&highScores[i], scoreSprites);

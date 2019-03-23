@@ -87,7 +87,7 @@ extern const uint8_t const W[3*5+2];
 extern const uint8_t const X[3*5+2];
 extern const uint8_t const Y[3*5+2];
 extern const uint8_t const Z[3*5+2];
-extern const uint8_t enterHighScoreScreen[128*32+2];
+extern const uint8_t enterHighScoreScreen[1];
 extern const uint8_t viewHighScoreScreen[128*32+2];
 extern const uint8_t cursorSprite[5*7+2];
 /* Declare text buffer for display output */
